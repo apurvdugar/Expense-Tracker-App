@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    // CHANGED: Remove user filter to fetch ALL expenses
     let expenses = await ExpenseModel.find({});
     console.log("✅ Expenses found:", expenses.length);
     
@@ -36,7 +35,7 @@ Format your response as:
     `;
     
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+    const model = 'gemini-2.5-pro';
     
     const result = await model.generateContent(prompt);
     const aiMessage = result.response.text();
