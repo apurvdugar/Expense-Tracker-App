@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router-dom";
-import CategoryPieChart from "../components/Insights/categoryPieChart";
+import CategoryPieChart from "../components/Insights/CategoryPieChart";
 import ExpenseTrendChart from "../components/Insights/ExpenseTrendChart";
 import TopCategories from "../components/Insights/TopCategories";
 import BudgetProgress from "../components/Insights/BudgetProcessbar";
