@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 import cors from 'cors';
 app.use(cors({
-  origin: process.env.CLIENT_URL, 
+  origin: "https://expense-tracker-app-tau-nine.vercel.app", // <- NO trailing slash
   credentials: true
 }));
 
