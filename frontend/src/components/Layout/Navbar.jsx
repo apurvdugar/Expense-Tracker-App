@@ -1,53 +1,84 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Wallet, LogOut, User, BarChart3 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import { Button } from '@radix-ui/themes';
-import { Wallet, LogOut, BarChart3, LayoutDashboard } from 'lucide-react';
 
-const Navbar = () => {
+const NAV_LINKS = [
+  { name: "Home", to: "/dashboard" },
+  { name: "Expenses", to: "/expenses" },
+  { name: "Insights", to: "/insights" },
+  { name: "Tips", to: "/tips" },
+  { name: "Add Expense", to: "/add-expense" }
+];
+
+const Navbar = ({ onAddExpense }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    if (typeof logout === "function") logout();
+    navigate("/login");
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-backdrop-filter:bg-card/60">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-primary to-accent">
-            <Wallet className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
-            ExpenseTracker
-          </span>
-        </Link>
-
-        {user && (
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard">
-              <Button variant="ghost" size="sm" className="gap-2">
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </Button>
-            </Link>
-            <Link to="/statistics">
-              <Button variant="ghost" size="sm" className="gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Statistics
-              </Button>
-            </Link>
-            <div className="h-8 w-px bg-border" />
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{user.name}</span>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
-                <LogOut className="h-4 w-4" />
-                Logout
-              </Button>
+    <nav className="w-full bg-[#f4f7f4]/80 border-b border-slate-200 shadow-sm backdrop-blur-xl z-30 fixed top-0 left-0">
+      <div className="mx-8 flex items-center justify-between px-4 py-2">
+        {/* Left: Logo and Name */}
+        <header className="relative z-10 flex justify-between items-center px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-2xl bg-green-200/60 shadow-lg">
+              <Wallet className="h-7 w-7 text-green-600" />
             </div>
+            <span>
+              <strong className="text-3xl font-black tracking-tight text-blue-950">Expense Tracker</strong>
+              <div className="text-s font-medium text-slate-700">Seamless finance tracking</div>
+            </span>
           </div>
-        )}
+        </header>
+        {/* Center: Menu Tabs */}
+        <div className="flex gap-2">
+          {NAV_LINKS.map(link =>
+            link.name === "Add Expense" ? (
+              <button
+                key={link.to}
+                className="px-4 py-1 text-base rounded-md font-medium bg-[#ecebe6] hover:bg-green-100 text-gray-700 transition"
+                // Fix: must call onAddExpense!
+                onClick={onAddExpense}
+                type="button"
+              >
+                {link.name}
+              </button>
+            ) : (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`px-4 py-1 text-base rounded-md font-medium
+                  ${location.pathname === link.to
+                    ? "bg-green-600 text-white shadow"
+                    : "bg-[#ecebe6] hover:bg-green-100 text-gray-700"}
+                  transition`}
+              >
+                {link.name}
+              </Link>
+            )
+          )}
+        </div>
+        {/* Right: User & Logout */}
+        <div className="flex items-center gap-4 ml-4">
+          {user && (
+            <span className="font-semibold text-gray-700 flex items-center gap-2">
+              <User className="w-5 h-5" /> {user.name}
+            </span>
+          )}
+          <button
+            onClick={handleLogout}
+            className="bg-linear-to-tr from-green-600 to-green-800 text-white rounded-lg px-4 py-2 font-bold hover:scale-105 transition flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" /> Logout
+          </button>
+        </div>
       </div>
     </nav>
   );
