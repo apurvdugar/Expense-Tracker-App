@@ -49,7 +49,7 @@ export default function Tips() {
       setLoading(true);
       setError(false);
 
-      const response = await fetch('https://your-backend.com/api/ai-tips', {
+      const response = await fetch('https://expense-tracker-app-backend-1.onrender.com/api/ai-tips', {
         headers: { 'token': token }
       });
 

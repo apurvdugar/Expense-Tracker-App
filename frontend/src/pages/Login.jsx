@@ -4,7 +4,7 @@ import { CloudCog, Wallet } from "lucide-react";
 import axios from "axios";
 
 const Login = () => {
-  const API = import.meta.env.REACT_APP_API_URL || "http://localhost:8000";
+  const API = import.meta.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
