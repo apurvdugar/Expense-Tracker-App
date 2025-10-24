@@ -1,5 +1,5 @@
 import express from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai"; // Or the new one if you used it: @google/genai
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import ExpenseModel from "../models/expenses.model.js";
 
 const router = express.Router();
@@ -34,18 +34,28 @@ Format your response as:
 ...and so on.
     `;
 
-    // --- FIX APPLIED HERE ---
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const modelInstance = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' }); // Switched to Flash for faster results
     
-    // Step 1: Get the GenerativeModel object using the client
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' }); 
-    // Recommended: Use 'gemini-2.5-flash' for speed, or 'gemini-2.5-pro' for complex reasoning.
+    // Call the API
+    const result = await modelInstance.generateContent(prompt);
     
-    // Step 2: Call generateContent on the 'model' object, not the string
-    const result = await model.generateContent(prompt);
+    // --- FIX APPLIED HERE: Robust response check and fallback ---
+    let aiMessage = result.response.text;
+
+    // Check if the response was blocked by safety filters
+    if (!aiMessage) {
+        const candidate = result.response.candidates?.[0];
+        if (candidate && candidate.finishReason === 'SAFETY') {
+            const safetyRating = candidate.safetyRatings?.[0];
+            const blockedReason = safetyRating ? `Blocked for safety reason: ${safetyRating.category} at threshold ${safetyRating.threshold}.` : 'Blocked by safety filters.';
+            aiMessage = `The AI model's response was blocked by safety filters. ${blockedReason}`;
+        } else {
+            // General empty response fallback
+            aiMessage = "The AI model did not return any insights. Please try again or check the input data for issues.";
+        }
+    }
     // --- END FIX ---
-    
-    const aiMessage = result.response.text; // Ensure you use .text to get the string content
 
     res.json({ insights: aiMessage });
   } catch (err) {
