@@ -1,5 +1,5 @@
 import express from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import ExpenseModel from "../models/expenses.model.js";
 
 const router = express.Router();
@@ -33,12 +33,17 @@ Format your response as:
 2. [Category]: [Specific tip with actionable advice]
 ...and so on.
     `;
-
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using flash for faster response
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     
-    const result = await model.generateContent(prompt);
-    const aiMessage = result.response.text(); // ← FIXED: Added () to call the function
+    const result = await ai.models.generateContent({ 
+        model: "gemini-2.5-flash", // Use the current stable model ID
+        contents: prompt
+    });
+    
+    let aiMessage = result.text; 
+    if (!aiMessage) {
+        aiMessage = "The AI model did not return any insights. This may be a temporary issue or the content was blocked by safety filters. Please try again or check the input data.";
+    }
 
     res.json({ insights: aiMessage });
   } catch (err) {
