@@ -4,7 +4,7 @@ import { Wallet } from "lucide-react";
 import axios from "axios";
 
 const Signup = () => {
-    const API = import.meta.env.VITE_API_BASE_URL ;
+    const API = "https://expense-tracker-app-backend-1.onrender.com";
 
     const [form, setForm] = useState({
         name: "",
