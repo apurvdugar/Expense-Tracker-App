@@ -7,7 +7,7 @@ import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import expenseRouter from './routes/expenseRoutes.js';
 import insightRouter from './routes/insightRoutes.js'; 
-
+import aiTipsRouter from "./routes/aiTips.js";
 dotenv.config();
 
 const app = express();
@@ -45,6 +45,7 @@ app.get('/', (req, res) => {
 // Main routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use(aiTipsRouter); 
 app.use('/api/expenses', expenseRouter);    
 app.use('/api/insights', insightRouter);      
 
