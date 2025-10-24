@@ -21,8 +21,19 @@ app.use(express.json());
 app.use(cookieParser());
 
 import cors from 'cors';
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://expense-tracker-app-tau-nine.vercel.app'
+];
+
 app.use(cors({
-  origin: "https://expense-tracker-app-tau-nine.vercel.app", // <- NO trailing slash
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
