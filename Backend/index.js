@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
 // Main routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
-app.use(aiTipsRouter); 
+app.use("/api/ai-tips", aiTipsRouter);
 app.use('/api/expenses', expenseRouter);    
 app.use('/api/insights', insightRouter);      
 

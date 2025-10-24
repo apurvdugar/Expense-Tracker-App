@@ -4,30 +4,54 @@ import ExpenseModel from "../models/expenses.model.js";
 
 const router = express.Router();
 
-router.get("/api/ai-tips", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
+    const userId = req.user?.id; // If not using auth, remove or set to null
     
-    const userId = req.user?.id; // Depends on your auth middleware
-
     // Fetch user expenses
-    const expenses = await ExpenseModel.find({ user: userId });
-
-    // Build a prompt for Gemini
+    let expenses = await ExpenseModel.find({ user: userId });
+    
+    // Handle case if no expenses
+    if (!expenses || expenses.length === 0) {
+      return res.json({ 
+        insights: "No expenses available to analyze. Add some expenses first to get personalized financial tips!" 
+      });
+    }
+    
+    // Build an enhanced prompt for Gemini
     const prompt = `
-      Analyze these expenses and give me 5 personalized financial improvement tips for an Indian user:
-      ${expenses.map(e => `- Rs.${e.amount} for ${e.category} (${e.description}) on ${new Date(e.date).toLocaleDateString()}`).join("\n")}
+You are a financial advisor for Indian users. Analyze the following expenses and provide 5 specific, actionable, and personalized money-saving tips.
+
+Expenses:
+${expenses.map(e => `- ₹${e.amount} spent on ${e.category} (${e.description}) on ${new Date(e.date).toLocaleDateString('en-IN')}`).join("\n")}
+
+Guidelines:
+- Focus on practical, India-specific recommendations (e.g., local alternatives, budget brands, government schemes)
+- Provide specific numbers or percentages where possible
+- Prioritize tips based on the highest spending categories
+- Keep each tip concise (2-3 sentences max)
+- Use Indian Rupees (₹) for all monetary values
+
+Format your response as:
+1. [Category]: [Specific tip with actionable advice]
+2. [Category]: [Specific tip with actionable advice]
+...and so on.
     `;
-
-    // Call Gemini
+    
+    // Call Gemini with updated model name
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+    
     const result = await model.generateContent(prompt);
     const aiMessage = result.response.text();
 
     res.json({ insights: aiMessage });
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch AI insights", error: err.message });
+    console.error("AI Tips route error:", err);
+    res.status(500).json({ 
+      message: "Failed to fetch AI insights", 
+      error: err.message 
+    });
   }
 });
 
