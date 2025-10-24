@@ -35,27 +35,10 @@ Format your response as:
     `;
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const modelInstance = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' }); // Switched to Flash for faster results
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using flash for faster response
     
-    // Call the API
-    const result = await modelInstance.generateContent(prompt);
-    
-    // --- FIX APPLIED HERE: Robust response check and fallback ---
-    let aiMessage = result.response.text;
-
-    // Check if the response was blocked by safety filters
-    if (!aiMessage) {
-        const candidate = result.response.candidates?.[0];
-        if (candidate && candidate.finishReason === 'SAFETY') {
-            const safetyRating = candidate.safetyRatings?.[0];
-            const blockedReason = safetyRating ? `Blocked for safety reason: ${safetyRating.category} at threshold ${safetyRating.threshold}.` : 'Blocked by safety filters.';
-            aiMessage = `The AI model's response was blocked by safety filters. ${blockedReason}`;
-        } else {
-            // General empty response fallback
-            aiMessage = "The AI model did not return any insights. Please try again or check the input data for issues.";
-        }
-    }
-    // --- END FIX ---
+    const result = await model.generateContent(prompt);
+    const aiMessage = result.response.text(); // ← FIXED: Added () to call the function
 
     res.json({ insights: aiMessage });
   } catch (err) {
