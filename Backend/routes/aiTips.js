@@ -6,19 +6,16 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const userId = req.user?.id; // If not using auth, remove or set to null
+    // CHANGED: Remove user filter to fetch ALL expenses
+    let expenses = await ExpenseModel.find({});
+    console.log("✅ Expenses found:", expenses.length);
     
-    // Fetch user expenses
-    let expenses = await ExpenseModel.find({ user: userId });
-    
-    // Handle case if no expenses
     if (!expenses || expenses.length === 0) {
       return res.json({ 
         insights: "No expenses available to analyze. Add some expenses first to get personalized financial tips!" 
       });
     }
     
-    // Build an enhanced prompt for Gemini
     const prompt = `
 You are a financial advisor for Indian users. Analyze the following expenses and provide 5 specific, actionable, and personalized money-saving tips.
 
@@ -38,7 +35,6 @@ Format your response as:
 ...and so on.
     `;
     
-    // Call Gemini with updated model name
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
     
@@ -47,7 +43,7 @@ Format your response as:
 
     res.json({ insights: aiMessage });
   } catch (err) {
-    console.error("AI Tips route error:", err);
+    console.error("❌ AI Tips route error:", err);
     res.status(500).json({ 
       message: "Failed to fetch AI insights", 
       error: err.message 
