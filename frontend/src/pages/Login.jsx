@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CloudCog, Wallet } from "lucide-react";
 import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const API = "https://expense-tracker-app-backend-1.onrender.com" ;
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const { setUser } = useAuth();
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -20,6 +22,7 @@ const Login = () => {
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      setUser(res.data.user);
       console.log("Login success, navigating...");
       navigate("/dashboard");
     } catch (err) {
