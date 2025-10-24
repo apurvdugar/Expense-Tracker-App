@@ -1,6 +1,6 @@
 import express from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import ExpenseModel from "../models/expenses.model";
+import ExpenseModel from "../models/expenses.model.js";
 
 const router = express.Router();
 
