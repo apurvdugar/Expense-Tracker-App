@@ -68,17 +68,20 @@ const Navbar = ({ onAddExpense }) => {
         {/* Right: User & Logout */}
         <div className="flex items-center gap-4 ml-4">
           {user && (
-            <span className="font-semibold text-gray-700 flex items-center gap-2">
-              <User className="w-5 h-5" /> {user.name}
-            </span>
+            <>
+            <div className="flex justify-center items-center">
+              <Link to="/profile" className="rounded-full hover:bg-green-100 transition p-2" title="Profile" >
+                <User className="w-5 h-5 text-green-700" />
+              </Link>
+                <span className="font-semibold text-gray-700">{user.name}</span>
+            </div>
+            </>
           )}
-          <button
-            onClick={handleLogout}
-            className="bg-linear-to-tr from-green-600 to-green-800 text-white rounded-lg px-4 py-2 font-bold hover:scale-105 transition flex items-center gap-2"
-          >
+          <button onClick={handleLogout} className="bg-linear-to-tr from-green-600 to-green-800 text-white rounded-lg px-4 py-2 font-bold hover:scale-105 transition flex items-center gap-2">
             <LogOut className="w-4 h-4" /> Logout
           </button>
         </div>
+
       </div>
     </nav>
   );
