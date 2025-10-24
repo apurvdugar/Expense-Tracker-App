@@ -96,7 +96,7 @@ export default function Tips() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-slate-50 pt-24">
+    <div className="min-h-screen bg-linear-to-br from-green-50 via-blue-50 to-slate-50 pt-24">
       <div className="container mx-auto max-w-3xl bg-white rounded-xl shadow-lg p-8 mt-10">
         <h1 className="text-3xl font-bold text-green-700 mb-2">💡 Smart AI Tips & Recommendations</h1>
         <p className="text-gray-600 mb-8">Personalized financial advice based on your spending</p>
