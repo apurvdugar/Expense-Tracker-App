@@ -5,7 +5,7 @@ const COLORS = [
   "#22c55e", "#0284c7", "#f59e42", "#ef4444", "#a855f7", "#14b8a6", "#fbbf24", "#64748b"
 ];
 
-function CategoryPieChart({ expenses }) {
+function categoryPieChart({ expenses }) {
   // Aggregate expenses by category
   const data = expenses.reduce((acc, e) => {
     const cat = e.category || "Other";
@@ -42,4 +42,4 @@ function CategoryPieChart({ expenses }) {
   );
 }
 
-export default CategoryPieChart;
+export default categoryPieChart;
