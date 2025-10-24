@@ -34,8 +34,8 @@ function prepareExpenseData(expenses) {
 // Helper: Generate prompt for AI
 function generateAnalysisPrompt(data) {
   return `As a financial advisor, analyze this expense data and provide detailed insights:
-Total Spending: ₹${data.total}
-Time Period: ${new Date(data.timespan.start).toLocaleDateString()} to ${new Date(data.timespan.end).toLocaleDateString()}
+Total Spending: ₹{data.total}
+Time Period: ${new Date(data.timespan.start).toLocaleDateString()} to ₹{new Date(data.timespan.end).toLocaleDateString()}
 Category Breakdown (% of total):
 ${Object.entries(data.categoryPercentages).map(([c, p]) => `- ${c}: ${p}%`).join('\n')}
 Monthly Spending:
