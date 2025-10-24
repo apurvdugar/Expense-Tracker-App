@@ -1,5 +1,5 @@
 import express from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai"; // Or the new one if you used it: @google/genai
 import ExpenseModel from "../models/expenses.model.js";
 
 const router = express.Router();
@@ -8,13 +8,13 @@ router.get("/", async (req, res) => {
   try {
     let expenses = await ExpenseModel.find({});
     console.log("✅ Expenses found:", expenses.length);
-    
+
     if (!expenses || expenses.length === 0) {
-      return res.json({ 
-        insights: "No expenses available to analyze. Add some expenses first to get personalized financial tips!" 
+      return res.json({
+        insights: "No expenses available to analyze. Add some expenses first to get personalized financial tips!"
       });
     }
-    
+
     const prompt = `
 You are a financial advisor for Indian users. Analyze the following expenses and provide 5 specific, actionable, and personalized money-saving tips.
 
@@ -33,19 +33,26 @@ Format your response as:
 2. [Category]: [Specific tip with actionable advice]
 ...and so on.
     `;
-    
+
+    // --- FIX APPLIED HERE ---
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = 'gemini-2.5-pro';
     
+    // Step 1: Get the GenerativeModel object using the client
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' }); 
+    // Recommended: Use 'gemini-2.5-flash' for speed, or 'gemini-2.5-pro' for complex reasoning.
+    
+    // Step 2: Call generateContent on the 'model' object, not the string
     const result = await model.generateContent(prompt);
-    const aiMessage = result.response.text();
+    // --- END FIX ---
+    
+    const aiMessage = result.response.text; // Ensure you use .text to get the string content
 
     res.json({ insights: aiMessage });
   } catch (err) {
     console.error("❌ AI Tips route error:", err);
-    res.status(500).json({ 
-      message: "Failed to fetch AI insights", 
-      error: err.message 
+    res.status(500).json({
+      message: "Failed to fetch AI insights",
+      error: err.message
     });
   }
 });
