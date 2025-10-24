@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Navigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import StatCard from '../components/Dashboard/statCard';
+import StatCard from '../components/Dashboard/StatCard';
 import { DollarSign, TrendingDown, Calendar, PieChart } from 'lucide-react';
 import ExpensePieChart from '../components/Dashboard/ExpensePieChart';
 
