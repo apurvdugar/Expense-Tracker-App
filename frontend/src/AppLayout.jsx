@@ -16,12 +16,12 @@ function AppLayout() {
       setLoading(true);
       const token = localStorage.getItem('token');
       if (!token) {
-        console.log('No token found, skipping fetch');
+        // console.log('No token found, skipping fetch');
         setLoading(false);
         return;
       }
 
-      console.log('Fetching expenses...');
+      // console.log('Fetching expenses...');
       
       const response = await fetch(`${BACKEND_URL}/api/expenses`, {
         headers: {
@@ -33,7 +33,7 @@ function AppLayout() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched expenses:', data);
+        // console.log('Fetched expenses:', data);
         setExpenses(data.expenses || []);
       } else {
         const errorData = await response.json();
@@ -60,7 +60,7 @@ function AppLayout() {
         return;
       }
 
-      console.log('Adding expense:', newExpense);
+      // console.log('Adding expense:', newExpense);
       
       const response = await fetch(`${BACKEND_URL}/api/expenses`, {
         method: 'POST',
@@ -92,7 +92,7 @@ function AppLayout() {
       }
 
       const result = await response.json();
-      console.log('Expense added:', result);
+      // console.log('Expense added:', result);
 
       // Refetch expenses after adding
       await fetchExpenses();

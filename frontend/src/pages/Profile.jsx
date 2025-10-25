@@ -172,15 +172,15 @@ function Profile() {
         <div className="bg-white/90 rounded-xl shadow-md border border-slate-200 p-6">
           <h2 className="text-xl font-bold text-green-700 mb-4">Account Statistics</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+            <div className="p-4 bg-linear-to-br from-green-50 to-green-100 rounded-lg">
               <div className="text-sm font-medium text-green-700 mb-1">Total Spend</div>
               <div className="text-2xl font-bold text-green-900">₹{totalSpend.toLocaleString()}</div>
             </div>
-            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+            <div className="p-4 bg-linear-to-br from-blue-50 to-blue-100 rounded-lg">
               <div className="text-sm font-medium text-blue-700 mb-1">Transactions</div>
               <div className="text-2xl font-bold text-blue-900">{expenses.length}</div>
             </div>
-            <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+            <div className="p-4 bg-linear-to-br from-purple-50 to-purple-100 rounded-lg">
               <div className="text-sm font-medium text-purple-700 mb-1">Categories Used</div>
               <div className="text-2xl font-bold text-purple-900">{categories.length}</div>
             </div>
