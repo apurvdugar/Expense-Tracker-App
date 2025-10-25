@@ -6,15 +6,17 @@ import "@radix-ui/themes/styles.css";
 import { BrowserRouter } from "react-router-dom";
 import { Theme } from "@radix-ui/themes";
 import { AuthProvider } from './contexts/AuthContext.jsx';
+import ToastProvider from './components/ToastProvider.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  
     <AuthProvider>
     <BrowserRouter>
       <Theme>
         <App />
+        <ToastProvider />
       </Theme>
     </BrowserRouter>
     </AuthProvider>
-  </StrictMode>,
+  
 )

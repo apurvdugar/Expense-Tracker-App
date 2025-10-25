@@ -32,16 +32,14 @@ export default function Tips() {
   }
 
   function formatInsights(insights) {
-    // Handle "no expenses" case
     if (!insights.match(/^\d+\./m)) {
       return `
-        <div class="bg-blue-50 border-l-4 border-blue-500 rounded p-6">
+        <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
           <p class="text-blue-900 font-medium">${insights}</p>
         </div>
       `;
     }
 
-    // Split by numbered lines (1., 2., 3., etc.)
     const lines = insights.split('\n').filter(line => line.trim());
     const tips = [];
     let currentTip = null;
@@ -49,36 +47,31 @@ export default function Tips() {
     for (const line of lines) {
       const match = line.match(/^(\d+)\.\s*(.+)/);
       if (match) {
-        // New tip found
         if (currentTip) tips.push(currentTip);
         currentTip = {
           number: match[1],
           content: match[2]
         };
       } else if (currentTip && line.trim()) {
-        // Continuation of current tip
         currentTip.content += ' ' + line.trim();
       }
     }
     if (currentTip) tips.push(currentTip);
 
-    // Format as HTML
     return tips.map(tip => {
-      // Extract category if present in format: [Category]: text
       const categoryMatch = tip.content.match(/^\[?([^\]]+)\]?:\s*(.+)/);
       const category = categoryMatch ? categoryMatch[1] : `Tip ${tip.number}`;
       const text = categoryMatch ? categoryMatch[2] : tip.content;
 
-      // Highlight ₹ amounts
       const formattedText = text
-        .replace(/₹(\d+[,\d]*)/g, '<span class="text-[#2d6a4f] font-semibold">₹$1</span>')
-        .replace(/\*\*(.+?)\*\*/g, '<span class="font-semibold text-[#2d6a4f]">$1</span>');
+        .replace(/₹(\d+[,\d]*)/g, '<span class="text-green-600 font-semibold">₹$1</span>')
+        .replace(/\*\*(.+?)\*\*/g, '<span class="font-semibold text-green-700">$1</span>');
 
       return `
-        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 mb-6 last:mb-0 border-l-4 border-[#40916c]">
+        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 mb-4 last:mb-0 border-l-4 border-green-500">
           <div class="flex items-center gap-3 mb-3">
-            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-[#40916c] text-white font-bold text-sm">${tip.number}</span>
-            <h3 class="text-xl font-bold text-[#40916c]">${category}</h3>
+            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white font-bold text-sm">${tip.number}</span>
+            <h3 class="text-lg font-bold text-green-700">${category}</h3>
           </div>
           <p class="text-gray-700 leading-relaxed">${formattedText}</p>
         </div>
@@ -96,28 +89,42 @@ export default function Tips() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-green-50 via-blue-50 to-slate-50 pt-24">
-      <div className="container mx-auto max-w-3xl bg-white rounded-xl shadow-lg p-8 mt-10">
-        <h1 className="text-3xl font-bold text-green-700 mb-2">💡 Smart AI Tips & Recommendations</h1>
-        <p className="text-gray-600 mb-8">Personalized financial advice based on your spending</p>
+    <div className="relative min-h-screen bg-linear-to-tr from-white via-slate-50 to-green-50 overflow-x-hidden pt-24">
+      {/* ✅ Added animated blobs */}
+      <div className="absolute -top-32 -left-32 w-md h-112 rounded-full pointer-events-none z-0 bg-linear-to-br from-green-100 via-blue-100 to-cyan-100 blur-2xl opacity-25 animate-blob1" />
+      <div className="absolute -bottom-40 -right-40 w-88 h-88 rounded-full pointer-events-none z-0 bg-linear-to-br from-fuchsia-100 via-green-100 to-indigo-100 blur-2xl opacity-25 animate-blob2" />
+
+      <div className="container mx-auto max-w-7xl py-10 px-4">
+        {/* ✅ Consistent heading */}
+        <h1 className="text-3xl font-extrabold text-green-700 tracking-tight mb-8">💡 Smart AI Tips & Recommendations</h1>
+        <p className="text-gray-600 mb-8 text-lg">Personalized financial advice based on your spending patterns</p>
         
-        {loading && (
-          <div className="flex flex-col items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#40916c] border-t-transparent"></div>
-            <p className="mt-4 text-[#40916c] font-medium">Analyzing your financial data...</p>
-          </div>
-        )}
-        
-        {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 rounded p-4 my-4">
-            <p className="text-red-700 font-semibold">❌ Failed to load AI insights. Try again later.</p>
-          </div>
-        )}
-        
-        {!loading && !error && insightsHtml && (
-          <div className="ai-insights-container" dangerouslySetInnerHTML={{ __html: insightsHtml }} />
-        )}
+        <div className="max-w-3xl mx-auto">
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-12 bg-white rounded-xl shadow-md p-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-600 border-t-transparent mb-4"></div>
+              <p className="text-green-700 font-medium">Analyzing your financial data...</p>
+            </div>
+          )}
+          
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+              <p className="text-red-700 font-semibold">❌ Failed to load AI insights. Please try again later.</p>
+            </div>
+          )}
+          
+          {!loading && !error && insightsHtml && (
+            <div className="ai-insights-container" dangerouslySetInnerHTML={{ __html: insightsHtml }} />
+          )}
+        </div>
       </div>
+
+      <style>{`
+        @keyframes blob1 {0%,100%{transform:scale(1);} 33%{transform:scale(1.11) translateY(-10px);} 66%{transform:scale(0.96) translateX(6px);} }
+        @keyframes blob2 {0%,100%{transform:scale(1);} 25%{transform:scale(1.05) translateY(-5px);} 55%{transform:scale(0.94) translateX(-13px);} }
+        .animate-blob1 { animation: blob1 21s infinite cubic-bezier(.44,1.36,.45,.97);}
+        .animate-blob2 { animation: blob2 19s infinite cubic-bezier(.23,.99,.52,.99);}
+      `}</style>
     </div>
   );
 }

@@ -9,6 +9,8 @@ import Expenses from './pages/Expenses';
 import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
 import Tips from "./pages/Tips";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
       </Route>
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
     </Routes>
   );
 }

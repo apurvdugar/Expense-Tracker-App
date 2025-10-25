@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useOutletContext } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 const BACKEND_URL = 'https://expense-tracker-app-backend-1.onrender.com';
 
@@ -66,14 +67,13 @@ function Profile() {
       if (response.ok) {
         setBudget(budgetInput);
         setEditing(false);
-        
-        alert('✅ Budget updated successfully!');
+        toast.success('Budget updated successfully!');
       } else {
-        alert('❌ Failed to update budget');
+        toast.error('Failed to update budget');
       }
     } catch (error) {
       console.error('Error saving budget:', error);
-      alert('❌ Failed to update budget. Please try again.');
+      toast.error('Failed to update budget. Please try again.');
     } finally {
       setSaveLoading(false); 
     }

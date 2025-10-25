@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { Wallet, BarChart3, Layers, Clock, CreditCard } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-// Glass effect/feature block utility
 const FeatureCard = ({ Icon, title, desc, color }) => (
   <div className={`flex gap-2 items-start p-5 rounded-2xl bg-white/60 shadow-xl border border-slate-100 hover:scale-[1.03] transition glass-effect`}>
     <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${color}`}>
@@ -27,15 +26,15 @@ const Landing = () => {
       {/* Header */}
       <div className='mx-auto w-full max-w-7xl'>
       <header className="relative z-10 flex justify-between items-center px-6 py-10">
-        <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-green-200/60 shadow-lg">
-                <Wallet className="h-7 w-7 text-green-600" />
-            </div>
+        <Link to="/" className="flex items-center gap-3">  
+          <div className="p-3 rounded-2xl bg-green-200/60 shadow-lg">
+            <Wallet className="h-7 w-7 text-green-600" />
+          </div>
           <span>
             <strong className="text-3xl font-black tracking-tight text-blue-950">Expense Tracker</strong>
-            <div className="text-s font-medium text-slate-700">Seamless finance tracking</div>
+            <div className="text-sm font-medium text-slate-700">Seamless finance tracking</div>
           </span>
-        </div>
+        </Link>
         <nav className="flex gap-5 items-center">
           <Link to="/privacy" className="text-gray-500 hover:text-primary">Privacy</Link>
           <Link to="/terms" className="text-gray-500 hover:text-primary">Terms</Link>
@@ -55,7 +54,7 @@ const Landing = () => {
         <section className="flex-1 flex flex-col items-start justify-center gap-10">
           <div>
             <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-5 leading-tight">
-              Your <span className="text-green-700">expenses</span>.<br/>
+              Your <span className="text-red-800">expenses</span>.<br/>
               <span className="bg-linear-to-br from-sky-400 to-gray-800 text-transparent bg-clip-text italic">Under control.</span>
             </h1>
             <p className="mt-4 text-xl text-slate-700 font-medium max-w-xl">
@@ -113,8 +112,8 @@ const Landing = () => {
       <footer className="text-center py-10 bg-transparent mt-auto relative z-10">
         <div className="text-sm font-medium flex flex-col md:flex-row gap-2 md:gap-5 items-center justify-center text-slate-500">
           <span>© {new Date().getFullYear()} <b>Expense Tracker</b> | Built by Apurv Dugar</span>
-          <span>Connect: <a className="text-primary hover:underline" href="mailto:contact@expensetracker.com">contact@expensetracker.com</a></span>
-          <a href="https://github.com/your-repo" className="text-indigo-700 hover:underline">GitHub</a>
+          <span>Connect: <a className="text-primary hover:underline" href="#">contact@expensetracker.com</a></span>
+          <a href="https://github.com/apurvdugar/Expense-Tracker-App" className="text-indigo-700 hover:underline">GitHub</a>
           <Link to="/privacy" className="hover:underline">Privacy</Link>
         </div>
       </footer>

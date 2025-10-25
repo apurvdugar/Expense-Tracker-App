@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import AddExpenseModal from "./components/Dashboard/AddExpenseModal";
 import Navbar from "./components/Layout/Navbar";
 import { Outlet } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const BACKEND_URL = 'https://expense-tracker-app-backend-1.onrender.com';
 
@@ -56,7 +57,7 @@ function AppLayout() {
       const token = localStorage.getItem('token');
       if (!token) {
         console.error('No token found');
-        alert('Please login first');
+        toast.error('Please login first');
         return;
       }
 
@@ -83,22 +84,22 @@ function AppLayout() {
         try {
           const errorData = JSON.parse(errorText);
           console.error('Parsed error:', errorData);
-          alert(`Failed to add expense: ${errorData.message}`);
+          toast.error(`Failed to add expense: ${errorData.message}`);
         } catch {
           console.error('Could not parse error as JSON');
-          alert(`Failed to add expense: ${errorText}`);
+          toast.error(`Failed to add expense: ${errorText}`);
         }
         return;
       }
 
       const result = await response.json();
       // console.log('Expense added:', result);
-
+      toast.success('Expense added successfully!');
       // Refetch expenses after adding
       await fetchExpenses();
     } catch (error) {
       console.error('Error adding expense:', error);
-      alert('Failed to add expense. Please try again.');
+      toast.error('Failed to add expense. Please try again.');
     }
   };
 
