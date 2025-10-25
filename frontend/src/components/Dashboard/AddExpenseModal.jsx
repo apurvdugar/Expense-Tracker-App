@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-// You can adjust these categories as needed
 const CATEGORIES = [
   "Food",
   "Transport",
@@ -20,12 +19,13 @@ const AddExpenseModal = ({ visible, onClose, onAddExpense }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.amount || !form.category) return;
+    
     onAddExpense({
-      ...form,
       amount: parseFloat(form.amount),
-      id: Date.now(),
-      date: new Date().toISOString()
+      category: form.category,
+      description: form.description
     });
+    
     setForm({ amount: "", category: "", description: "" });
     onClose();
   };
@@ -42,6 +42,7 @@ const AddExpenseModal = ({ visible, onClose, onAddExpense }) => {
             value={form.amount}
             onChange={e => setForm({ ...form, amount: e.target.value })}
             min="0"
+            step="0.01"
             required
           />
           <select
@@ -64,6 +65,7 @@ const AddExpenseModal = ({ visible, onClose, onAddExpense }) => {
             value={form.description}
             onChange={e => setForm({ ...form, description: e.target.value })}
             maxLength={100}
+            required
           />
 
           <div className="flex gap-2 justify-end mt-2">

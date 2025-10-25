@@ -11,11 +11,16 @@ import ExportInsightsCSV from "../components/Insights/ExportInsightsCSV";
 const BACKEND_URL = 'https://expense-tracker-app-backend-1.onrender.com';
 
 export default function Insights() {
-  const { expenses } = useOutletContext();
+  const { expenses, loading, refetchExpenses } = useOutletContext();
   const [budget, setBudget] = useState(10000);
-  const [loading, setLoading] = useState(true);
+  const [budgetLoading, setBudgetLoading] = useState(true);
 
-  // ✅ Fetch budget from backend
+  // Refetch expenses when component mounts
+  useEffect(() => {
+    refetchExpenses();
+  }, []);
+
+  // Fetch budget from backend
   useEffect(() => {
     const fetchBudget = async () => {
       try {
@@ -36,7 +41,7 @@ export default function Insights() {
       } catch (error) {
         console.error('Error fetching budget:', error);
       } finally {
-        setLoading(false);
+        setBudgetLoading(false);
       }
     };
 
@@ -64,8 +69,16 @@ export default function Insights() {
       )
     : { amount: 0, description: "(No description)" };
 
-  if (loading) {
-    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+  // Loading state
+  if (loading || budgetLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading insights...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -125,7 +138,7 @@ export default function Insights() {
           </div>
         </div>
 
-        {/* Lower Analytics Grid - ✅ Now using dynamic budget */}
+        {/* Lower Analytics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           <div className="bg-white rounded-xl shadow p-6 h-full flex flex-col justify-between">
             <BudgetProgress expenses={expenses} budget={budget} />

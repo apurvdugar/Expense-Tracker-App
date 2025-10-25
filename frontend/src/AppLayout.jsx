@@ -8,43 +8,46 @@ const BACKEND_URL = 'https://expense-tracker-app-backend-1.onrender.com';
 function AppLayout() {
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch expenses from backend on mount
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.log('No token found, skipping fetch');
-          return;
-        }
-
-        console.log('Fetching expenses with token:', token);
-        
-        // ✅ FIXED: Added /api/expenses to the URL
-        const response = await fetch(`${BACKEND_URL}/api/expenses`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        });
-
-        console.log('Fetch expenses response:', response);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Fetched expenses:', data);
-          setExpenses(data.expenses || []);
-        } else {
-          const errorData = await response.json();
-          console.error('Failed to fetch expenses:', errorData);
-        }
-      } catch (error) {
-        console.error('Error fetching expenses:', error);
+  // Centralized fetch function
+  const fetchExpenses = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found, skipping fetch');
+        setLoading(false);
+        return;
       }
-    };
 
+      console.log('Fetching expenses...');
+      
+      const response = await fetch(`${BACKEND_URL}/api/expenses`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched expenses:', data);
+        setExpenses(data.expenses || []);
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to fetch expenses:', errorData);
+      }
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch on mount
+  useEffect(() => {
     fetchExpenses();
   }, []);
 
@@ -58,7 +61,6 @@ function AppLayout() {
       }
 
       console.log('Adding expense:', newExpense);
-
       
       const response = await fetch(`${BACKEND_URL}/api/expenses`, {
         method: 'POST',
@@ -92,19 +94,8 @@ function AppLayout() {
       const result = await response.json();
       console.log('Expense added:', result);
 
-      // Refetch expenses to get the latest data
-      const getResponse = await fetch(`${BACKEND_URL}/api/expenses`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      });
-
-      if (getResponse.ok) {
-        const data = await getResponse.json();
-        setExpenses(data.expenses || []);
-      }
+      // Refetch expenses after adding
+      await fetchExpenses();
     } catch (error) {
       console.error('Error adding expense:', error);
       alert('Failed to add expense. Please try again.');
@@ -122,7 +113,8 @@ function AppLayout() {
         onClose={handleCloseAddExpense}
         onAddExpense={handleAddExpense}
       />
-      <Outlet context={{ expenses, setExpenses }} />
+      {/* Pass loading state and refetch function to children */}
+      <Outlet context={{ expenses, setExpenses, loading, refetchExpenses: fetchExpenses }} />
     </>
   );
 }
