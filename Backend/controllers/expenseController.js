@@ -15,24 +15,42 @@ export const getExpenses = async (req, res) => {
 // POST: Add a new expense
 export const addExpense = async (req, res) => {
   try {
+    console.log('Add expense request:', {
+      body: req.body,
+      userId: req.userId,
+      headers: req.headers.authorization
+    });
     const { amount, category, description } = req.body;
-
     const validated = expensePayloadSchema.safeParse(req.body);
     if (!validated.success) {
-      return res.status(400).json({ message: validated.error.errors[0].message });
+      console.error('Validation error:', validated.error.errors);
+      return res.status(400).json({ 
+        message: validated.error.errors[0].message,
+        errors: validated.error.errors 
+      });
     }
 
+    if (!req.userId) {
+      console.error('No userId found in request');
+      return res.status(401).json({ message: "User not authenticated" });
+    }
     const newExpense = await ExpenseModel.create({
       amount,
       category: category.toLowerCase(),
       description,
       user: req.userId,
     });
-
-    res.status(201).json({ message: "Expense added", expense: newExpense });
+    console.log('Expense created:', newExpense);
+    res.status(201).json({ 
+      message: "Expense added", 
+      expense: newExpense 
+    });
   } catch (error) {
     console.error('Add expense error:', error);
-    res.status(500).json({ message: "Failed to add expense" });
+    res.status(500).json({ 
+      message: "Failed to add expense",
+      error: error.message 
+    });
   }
 };
 
