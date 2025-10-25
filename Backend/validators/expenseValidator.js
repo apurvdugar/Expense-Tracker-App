@@ -9,7 +9,7 @@ export const expensePayloadSchema = z.object({
     .min(1, 'Category is required')
     .max(20, 'Category name too long')
     .refine(
-      val => [ "Food", "Transport", "Shopping", "Utilities", "Education", "Medical", "Entertainment", "Other"].includes(val.toLowerCase()),'Invalid category'),
+      val => ['food', 'transport', 'shopping', 'utilities', 'education', 'medical', 'entertainment', 'other'].includes(val.toLowerCase()), 'Invalid category'),
   description: z.string()
     .min(1, 'Description is required')
     .max(100, 'Description too long')
