@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 You are a financial advisor for Indian users. Analyze the following expenses and provide 5 specific, actionable, and personalized money-saving tips.
 
 Expenses:
-${expenses.map(e => `- ₹${e.amount} spent on ${e.category} (${e.description}) on ${new Date(e.date).toLocaleDateString('en-IN')}`).join("\n")}
+${expenses.map(e => `- ₹${e.amount} spent on ${e.category} (${e.description}) on ${new Date(e.createdAt).toLocaleDateString('en-IN')}`).join("\n")}
 
 Guidelines:
 - Focus on practical, India-specific recommendations (e.g., local alternatives, budget brands, government schemes)
