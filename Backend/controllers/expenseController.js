@@ -16,11 +16,11 @@ export const getExpenses = async (req, res) => {
 // POST: Add a new expense
 export const addExpense = async (req, res) => {
   try {
-    console.log('Add expense request:', {
-      body: req.body,
-      userId: req.userId,
-      headers: req.headers.authorization
-    });
+    // console.log('Add expense request:', {
+    //   body: req.body,
+    //   userId: req.userId,
+    //   headers: req.headers.authorization
+    // });
     
     const { amount, category, description } = req.body;
     
@@ -45,7 +45,7 @@ export const addExpense = async (req, res) => {
       user: req.userId,
     });
     
-    console.log('Expense created:', newExpense);
+    // console.log('Expense created:', newExpense);
     
     res.status(201).json({ 
       message: "Expense added", 
