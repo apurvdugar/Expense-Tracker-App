@@ -12,12 +12,16 @@ function Profile() {
   const [editing, setEditing] = useState(false);
   const [budgetInput, setBudgetInput] = useState(budget);
   const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false); 
 
   useEffect(() => {
     const fetchBudget = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (!token) return;
+        if (!token) {
+          setLoading(false);
+          return;
+        }
 
         const response = await fetch(`${BACKEND_URL}/api/user/budget`, {
           headers: {
@@ -47,6 +51,7 @@ function Profile() {
 
   async function saveBudget() {
     try {
+      setSaveLoading(true); 
       const token = localStorage.getItem('token');
       const response = await fetch(`${BACKEND_URL}/api/user/budget`, {
         method: 'PUT',
@@ -61,18 +66,28 @@ function Profile() {
       if (response.ok) {
         setBudget(budgetInput);
         setEditing(false);
-        alert('Budget updated successfully!');
+        
+        alert('✅ Budget updated successfully!');
       } else {
-        alert('Failed to update budget');
+        alert('❌ Failed to update budget');
       }
     } catch (error) {
       console.error('Error saving budget:', error);
-      alert('Failed to update budget');
+      alert('❌ Failed to update budget. Please try again.');
+    } finally {
+      setSaveLoading(false); 
     }
   }
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-linear-to-tr from-white via-slate-50 to-green-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading profile...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -84,58 +99,107 @@ function Profile() {
         <h1 className="text-3xl font-extrabold text-green-700 tracking-tight mb-8">
           Profile
         </h1>
-        <div className="flex flex-col gap-1 mb-8">
-          <div><span className="font-semibold">Name:</span> {user?.name || "N/A"}</div>
-          <div><span className="font-semibold">Email:</span> {user?.email || "N/A"}</div>
+        
+        {/* User Info Card */}
+        <div className="bg-white/90 rounded-xl shadow-md border border-slate-200 p-6 mb-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Personal Information</h2>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-700 w-20">Name:</span>
+              <span className="text-gray-900">{user?.name || "N/A"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-700 w-20">Email:</span>
+              <span className="text-gray-900">{user?.email || "N/A"}</span>
+            </div>
+          </div>
         </div>
         
-        {/* Budget edit */}
-        <div className="mb-8">
-          <div className="font-semibold text-green-700 mb-2">Monthly Budget</div>
+        {/* Budget Card */}
+        <div className="bg-white/90 rounded-xl shadow-md border border-slate-200 p-6 mb-6">
+          <h2 className="text-xl font-bold text-green-700 mb-4">Monthly Budget</h2>
           {!editing ? (
             <div className="flex items-center gap-4">
-              <span className="font-bold text-xl">₹{budget.toLocaleString()}</span>
+              <span className="font-bold text-2xl text-gray-900">₹{budget.toLocaleString()}</span>
               <button
-                className="px-4 py-1 rounded bg-green-200 text-green-700 font-semibold hover:bg-green-300"
+                className="px-4 py-2 rounded-lg bg-green-100 text-green-700 font-semibold hover:bg-green-200 transition"
                 onClick={() => setEditing(true)}
               >
-                Edit
+                Edit Budget
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <input
                 type="number"
-                className="border rounded px-3 py-2 w-32"
+                className="border-2 border-gray-300 rounded-lg px-4 py-2 w-48 font-medium focus:border-green-500 focus:ring-1 focus:ring-green-300"
                 value={budgetInput}
                 min={0}
                 onChange={e => setBudgetInput(Number(e.target.value))}
+                disabled={saveLoading}
               />
-              <button
-                className="px-4 py-1 rounded bg-green-600 text-white font-semibold hover:bg-green-700"
-                onClick={saveBudget}
-              >
-                Save
-              </button>
-              <button
-                className="px-4 py-1 rounded bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300"
-                onClick={() => {
-                  setBudgetInput(budget);
-                  setEditing(false);
-                }}
-              >
-                Cancel
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="px-4 py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-2"
+                  onClick={saveBudget}
+                  disabled={saveLoading}
+                >
+                  {saveLoading ? (
+                    <>
+                      <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    'Save'
+                  )}
+                </button>
+                <button
+                  className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition disabled:opacity-50"
+                  onClick={() => {
+                    setBudgetInput(budget);
+                    setEditing(false);
+                  }}
+                  disabled={saveLoading}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
         </div>
         
-        {/* Account stats */}
-        <div className="mb-8">
-          <div className="font-semibold text-green-700 mb-2">Account Stats</div>
-          <div>Total Spend: <span className="font-bold">₹{totalSpend.toLocaleString()}</span></div>
-          <div>Transactions: <span className="font-bold">{expenses.length}</span></div>
-          <div>Categories Used: <span className="font-bold">{categories.length}</span> ({categories.join(", ")})</div>
+        {/* Account Stats Card */}
+        <div className="bg-white/90 rounded-xl shadow-md border border-slate-200 p-6">
+          <h2 className="text-xl font-bold text-green-700 mb-4">Account Statistics</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+              <div className="text-sm font-medium text-green-700 mb-1">Total Spend</div>
+              <div className="text-2xl font-bold text-green-900">₹{totalSpend.toLocaleString()}</div>
+            </div>
+            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+              <div className="text-sm font-medium text-blue-700 mb-1">Transactions</div>
+              <div className="text-2xl font-bold text-blue-900">{expenses.length}</div>
+            </div>
+            <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+              <div className="text-sm font-medium text-purple-700 mb-1">Categories Used</div>
+              <div className="text-2xl font-bold text-purple-900">{categories.length}</div>
+            </div>
+          </div>
+          {categories.length > 0 && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <div className="text-sm font-medium text-gray-700 mb-2">Active Categories:</div>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat, idx) => (
+                  <span
+                    key={idx}
+                    className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm border border-gray-200"
+                  >
+                    {cat}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
