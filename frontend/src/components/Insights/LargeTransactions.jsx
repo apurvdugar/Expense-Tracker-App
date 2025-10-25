@@ -1,7 +1,7 @@
 function LargeTransactions({ expenses, count = 3 }) {
   const now = new Date();
   const thisMonthExpenses = expenses.filter(e => {
-    const d = new Date(e.date);
+    const d = new Date(e.createdAt);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
@@ -28,7 +28,7 @@ function LargeTransactions({ expenses, count = 3 }) {
           <tbody>
             {largest.map((e, i) => (
               <tr key={e.id || i} className="border-t">
-                <td>{new Date(e.date).toLocaleDateString()}</td>
+                <td>{new Date(e.createdAt).toLocaleDateString()}</td>
                 <td>{e.description || '—'}</td>
                 <td>{e.category}</td>
                 <td className="text-right font-bold text-green-700">₹{e.amount.toLocaleString()}</td>

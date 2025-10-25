@@ -40,7 +40,7 @@ const Landing = () => {
           <Link to="/privacy" className="text-gray-500 hover:text-primary">Privacy</Link>
           <Link to="/terms" className="text-gray-500 hover:text-primary">Terms</Link>
           {user
-          ? <Link to="/dashboard"><button className="h-10 bg-linear-to-br from-primary to-green-800 text-white px-6 rounded-xl font-bold shadow hover:scale-105 transition">Dashboard</button></Link>
+          ? <Link to="/dashboard"><button className="h-10 bg-linear-to-br from-green-300 to-green-800 text-white px-6 rounded-xl font-bold shadow hover:scale-105 transition">Go to Dashboard</button></Link>
           : <>
               <Link to="/login"><button className="h-10 bg-white/90 border border-blue-100 text-primary font-bold px-5 rounded-xl hover:bg-blue-50 shadow-sm transition">Sign In</button></Link>
               <Link to="/signup"><button className="h-10 bg-linear-to-br from-green-300 to-green-800 text-white px-6 rounded-xl font-bold shadow hover:scale-105 transition">Get Started</button></Link>

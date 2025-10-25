@@ -3,7 +3,7 @@ function ExportInsightsCSV({ expenses }) {
     // Aggregate for CSV summary
     const now = new Date();
     const thisMonthExpenses = expenses.filter(e => {
-      const d = new Date(e.date);
+      const d = new Date(e.createdAt);
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     });
     const monthlyTotal = thisMonthExpenses.reduce((a, b) => a + b.amount, 0);
@@ -21,7 +21,7 @@ function ExportInsightsCSV({ expenses }) {
     csv += "\n\nLargest Transactions\nDate,Description,Category,Amount\n";
     const largest = [...thisMonthExpenses].sort((a, b) => b.amount - a.amount).slice(0, 5);
     csv += largest.map(e =>
-      `[${new Date(e.date).toLocaleDateString()}],${e.description},${e.category},${e.amount}`
+      `[${new Date(e.createdAt).toLocaleDateString()}],${e.description},${e.category},${e.amount}`
     ).join("\n");
 
     const blob = new Blob([csv], { type: "text/csv" });

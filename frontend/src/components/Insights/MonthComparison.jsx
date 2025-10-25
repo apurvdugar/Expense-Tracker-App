@@ -7,7 +7,7 @@ function MonthComparison({ expenses }) {
 
   let thisMonthTotal = 0, lastMonthTotal = 0;
   expenses.forEach(e => {
-    const d = new Date(e.date);
+    const d = new Date(e.createdAt);
     if (d.getMonth() === thisMonth && d.getFullYear() === thisYear) {
       thisMonthTotal += e.amount;
     } else if (d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear) {

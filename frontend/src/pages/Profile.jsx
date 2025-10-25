@@ -1,25 +1,78 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useOutletContext } from "react-router-dom";
+
+const BACKEND_URL = 'https://expense-tracker-app-backend-1.onrender.com';
 
 function Profile() {
   const { user } = useAuth();
   const { expenses } = useOutletContext();
 
-  // Load or set budget from localStorage
-  const storedBudget = localStorage.getItem("user_budget");
-  const [budget, setBudget] = useState(storedBudget ? Number(storedBudget) : 10000);
+  const [budget, setBudget] = useState(10000);
   const [editing, setEditing] = useState(false);
   const [budgetInput, setBudgetInput] = useState(budget);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBudget = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch(`${BACKEND_URL}/api/user/budget`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setBudget(data.budget || 10000);
+          setBudgetInput(data.budget || 10000);
+        }
+      } catch (error) {
+        console.error('Error fetching budget:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBudget();
+  }, []);
 
   // Account stats
   const categories = [...new Set(expenses.map(e => e.category))];
   const totalSpend = expenses.reduce((a, b) => a + b.amount, 0);
 
-  function saveBudget() {
-    setBudget(budgetInput);
-    localStorage.setItem("user_budget", budgetInput);
-    setEditing(false);
+  async function saveBudget() {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/user/budget`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include',
+        body: JSON.stringify({ budget: budgetInput })
+      });
+
+      if (response.ok) {
+        setBudget(budgetInput);
+        setEditing(false);
+        alert('Budget updated successfully!');
+      } else {
+        alert('Failed to update budget');
+      }
+    } catch (error) {
+      console.error('Error saving budget:', error);
+      alert('Failed to update budget');
+    }
+  }
+
+  if (loading) {
+    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
   }
 
   return (
@@ -34,8 +87,8 @@ function Profile() {
         <div className="flex flex-col gap-1 mb-8">
           <div><span className="font-semibold">Name:</span> {user?.name || "N/A"}</div>
           <div><span className="font-semibold">Email:</span> {user?.email || "N/A"}</div>
-          {/* Add more fields here as available */}
         </div>
+        
         {/* Budget edit */}
         <div className="mb-8">
           <div className="font-semibold text-green-700 mb-2">Monthly Budget</div>
@@ -66,13 +119,17 @@ function Profile() {
               </button>
               <button
                 className="px-4 py-1 rounded bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300"
-                onClick={() => setEditing(false)}
+                onClick={() => {
+                  setBudgetInput(budget);
+                  setEditing(false);
+                }}
               >
                 Cancel
               </button>
             </div>
           )}
         </div>
+        
         {/* Account stats */}
         <div className="mb-8">
           <div className="font-semibold text-green-700 mb-2">Account Stats</div>
@@ -80,8 +137,6 @@ function Profile() {
           <div>Transactions: <span className="font-bold">{expenses.length}</span></div>
           <div>Categories Used: <span className="font-bold">{categories.length}</span> ({categories.join(", ")})</div>
         </div>
-        {/* Future: Add settings/options here */}
-        {/* <div>Reset expenses | Export | Change password | Delete account</div> */}
       </div>
     </div>
   );

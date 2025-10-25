@@ -59,7 +59,7 @@ const ExpensesPage = () => {
       [
         e.description,
         e.category,
-        new Date(e.date).toLocaleDateString(),
+        new Date(e.createdAt).toLocaleDateString(),
         e.amount
       ].join(",")
     );
@@ -183,7 +183,7 @@ const ExpensesPage = () => {
                         <td className="px-4 py-3">{e.category}</td>
                         )}
                         {visibleColumns.includes("date") && (
-                        <td className="px-4 py-3">{new Date(e.date).toLocaleDateString()}</td>
+                        <td className="px-4 py-3">{new Date(e.createdAt).toLocaleDateString()}</td>
                         )}
                         {visibleColumns.includes("amount") && (
                         <td className="px-4 py-3 font-bold text-green-600">₹{e.amount}</td>

@@ -5,35 +5,15 @@ import StatCard from '../components/Dashboard/StatCard';
 import { DollarSign, TrendingDown, Calendar, PieChart } from 'lucide-react';
 import ExpensePieChart from '../components/Dashboard/ExpensePieChart';
 
-
-
 const Dashboard = () => {
   const { user, loading } = useAuth();
-
-  const { expenses, setExpenses } = useOutletContext();
-  const [showAddModal, setShowAddModal] = useState(false);
-
-  const openAddModal = () => setShowAddModal(true);
-  const closeAddModal = () => setShowAddModal(false);
-
-  const handleAddExpense = (newExpense) => {
-    const updatedExpenses = [newExpense, ...expenses];
-    setExpenses(updatedExpenses);
-    localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
-  };
-
-  useEffect(() => {
-    const savedExpenses = localStorage.getItem('expenses');
-    if (savedExpenses) {
-      setExpenses(JSON.parse(savedExpenses));
-    }
-  }, []);
+  const { expenses } = useOutletContext();
 
   // Expense calculations
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const thisMonthExpenses = expenses
     .filter(expense => {
-      const expenseDate = new Date(expense.date);
+      const expenseDate = new Date(expense.createdAt);
       const now = new Date();
       return (
         expenseDate.getMonth() === now.getMonth() &&
@@ -52,7 +32,7 @@ const Dashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const recentExpenses = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+  const recentExpenses = [...expenses].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
 
   return (
     <>
@@ -125,7 +105,7 @@ const Dashboard = () => {
                       <td className="py-1">{e.description}</td>
                       <td className="py-1">{e.category}</td>
                       <td className="py-1 font-bold text-green-600">₹{e.amount}</td>
-                      <td className="py-1">{new Date(e.date).toLocaleDateString()}</td>
+                      <td className="py-1">{new Date(e.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>

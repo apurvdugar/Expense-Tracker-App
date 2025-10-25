@@ -5,7 +5,7 @@ function getDailyData(expenses) {
   // Map of date (YYYY-MM-DD) => total
   const dailyMap = {};
   expenses.forEach(e => {
-    const d = new Date(e.date);
+    const d = new Date(e.createdAt);
     const key = d.toISOString().split('T')[0]; // Format YYYY-MM-DD
     dailyMap[key] = (dailyMap[key] || 0) + e.amount;
   });

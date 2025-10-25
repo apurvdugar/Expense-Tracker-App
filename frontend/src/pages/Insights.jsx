@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import CategoryPieChart from "../components/Insights/CategoryPieChart";
 import ExpenseTrendChart from "../components/Insights/ExpenseTrendChart";
@@ -7,13 +8,45 @@ import LargeTransactions from "../components/Insights/LargeTransactions";
 import MonthComparison from "../components/Insights/MonthComparison";
 import ExportInsightsCSV from "../components/Insights/ExportInsightsCSV";
 
+const BACKEND_URL = 'https://expense-tracker-app-backend-1.onrender.com';
+
 export default function Insights() {
   const { expenses } = useOutletContext();
+  const [budget, setBudget] = useState(10000);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch budget from backend
+  useEffect(() => {
+    const fetchBudget = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch(`${BACKEND_URL}/api/user/budget`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setBudget(data.budget || 10000);
+        }
+      } catch (error) {
+        console.error('Error fetching budget:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBudget();
+  }, []);
 
   // Gather monthly stats
   const now = new Date();
   const thisMonthExpenses = expenses.filter((e) => {
-    const d = new Date(e.date);
+    const d = new Date(e.createdAt);
     return (
       d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
     );
@@ -31,6 +64,10 @@ export default function Insights() {
       )
     : { amount: 0, description: "(No description)" };
 
+  if (loading) {
+    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+  }
+
   return (
     <div className="relative min-h-screen bg-linear-to-tr from-white via-slate-50 to-green-50 pt-24">
       <div className="absolute -top-32 -left-32 w-md h-112 rounded-full pointer-events-none z-0 bg-linear-to-br from-green-100 via-blue-100 to-cyan-100 blur-2xl opacity-25 animate-blob1" />
@@ -41,7 +78,7 @@ export default function Insights() {
           Insights Dashboard
         </h1>
 
-        {/* ---------- Stats Cards Row ---------- */}
+        {/* Stats Cards Row */}
         <div className="flex flex-wrap gap-6 justify-center mb-10">
           <div className="bg-white w-72 rounded-xl shadow p-6">
             <div className="font-bold text-green-700 mb-2">Monthly Total</div>
@@ -69,7 +106,7 @@ export default function Insights() {
           </div>
         </div>
 
-        {/* ---------- Main Analytics Grid ---------- */}
+        {/* Main Analytics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
             <h2 className="font-bold text-lg text-green-700 mb-2 text-center">
@@ -88,10 +125,10 @@ export default function Insights() {
           </div>
         </div>
 
-        {/* ---------- Lower Analytics Grid ---------- */}
+        {/* Lower Analytics Grid - ✅ Now using dynamic budget */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           <div className="bg-white rounded-xl shadow p-6 h-full flex flex-col justify-between">
-            <BudgetProgress expenses={expenses} budget={100000} />
+            <BudgetProgress expenses={expenses} budget={budget} />
           </div>
           <div className="bg-white rounded-xl shadow p-6 h-full flex flex-col justify-between">
             <LargeTransactions expenses={expenses} count={3} />
@@ -101,7 +138,7 @@ export default function Insights() {
           </div>
         </div>
 
-        {/* ---------- CSV Export Button ---------- */}
+        {/* CSV Export Button */}
         <div className="flex justify-end mt-4">
           <ExportInsightsCSV expenses={expenses} />
         </div>

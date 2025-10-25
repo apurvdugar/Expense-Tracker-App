@@ -1,7 +1,7 @@
 function BudgetProgress({ expenses, budget = 10000 }) {
   const now = new Date();
   const thisMonthExpenses = expenses.filter(e => {
-    const d = new Date(e.date);
+    const d = new Date(e.createdAt);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
   const total = thisMonthExpenses.reduce((a, b) => a + b.amount, 0);
