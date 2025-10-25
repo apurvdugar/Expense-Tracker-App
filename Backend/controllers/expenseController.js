@@ -17,21 +17,21 @@ export const addExpense = async (req, res) => {
   try {
     const { amount, category, description } = req.body;
 
-    // Validate input
     const validated = expensePayloadSchema.safeParse(req.body);
     if (!validated.success) {
       return res.status(400).json({ message: validated.error.errors[0].message });
     }
 
-    await ExpenseModel.create({
+    const newExpense = await ExpenseModel.create({
       amount,
       category: category.toLowerCase(),
       description,
       user: req.userId,
     });
 
-    res.status(201).json({ message: "Expense added" });
+    res.status(201).json({ message: "Expense added", expense: newExpense });
   } catch (error) {
+    console.error('Add expense error:', error);
     res.status(500).json({ message: "Failed to add expense" });
   }
 };
